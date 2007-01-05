@@ -1,0 +1,29 @@
+' Gambas class file
+
+'PUBLIC CONST INIFIle AS String = ".cpu-freq.conf"
+PUBLIC CONST INIFIle AS String = "/etc/vcpufreq.conf"
+PUBLIC CONST BasePath AS String = "/sys/devices/system/cpu/"
+STATIC PUBLIC CPUFreqPath AS String
+STATIC PUBLIC nonroot AS Boolean
+
+'STATIC PUBLIC BasePath AS String
+STATIC PUBLIC LinkedFreq AS Boolean
+STATIC PUBLIC numCPUs AS Integer
+
+' Config. load arrays:
+STATIC PUBLIC AvailableGovs AS String[]
+STATIC PUBLIC AvailableFreqs AS String[]
+STATIC PUBLIC AvailableFreqsPretty AS String[]
+
+' Config. load vars:
+STATIC PUBLIC vScalingDriver AS String
+STATIC PUBLIC vScalingGov AS String
+STATIC PUBLIC vCPUFreq AS Integer
+STATIC PUBLIC vCPUFreqMax AS Integer
+STATIC PUBLIC vCPUFreqMin AS Integer
+STATIC PUBLIC vCPUFreqMaxLimit AS Integer
+STATIC PUBLIC vCPUFreqMinLimit AS Integer
+STATIC PUBLIC vAutoRefreshRate AS String
+STATIC PUBLIC vSaveOnExit AS Boolean
+STATIC PUBLIC vLoadOnStart AS Boolean
+STATIC PUBLIC vCPUFreqLoad AS Boolean
