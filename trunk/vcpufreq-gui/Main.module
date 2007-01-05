@@ -1,0 +1,30 @@
+' Gambas module file
+
+SUB Main()
+
+IF System.User <> "root" THEN
+   message.Warning("You need to be root to run " & Application.Title & gb.NewLine & "Starting in read-only mode...")
+   Global.nonroot = TRUE
+   FMain.cmbScalingGovernor.Enabled = FALSE
+   FMain.cmbScalingSetSpeed.Enabled = FALSE
+   FMain.cmbScalingMaxFreq.Enabled = FALSE
+   FMain.cmbScalingMinFreq.Enabled = FALSE
+   FMain.chkSaveOnExit.Enabled = FALSE
+   FMain.chkLoadOnStart.Enabled = FALSE
+   FMain.chkLoadOnBoot.Enabled = FALSE
+   FMain.cmbAutoRefresh.Enabled = FALSE
+ELSE
+   Global.nonroot = FALSE
+   FMain.cmbScalingGovernor.Enabled = TRUE
+   FMain.cmbScalingSetSpeed.Enabled = TRUE
+   FMain.cmbScalingMaxFreq.Enabled = TRUE
+   FMain.cmbScalingMinFreq.Enabled = TRUE
+   FMain.chkSaveOnExit.Enabled = TRUE
+   FMain.chkLoadOnStart.Enabled = TRUE
+   FMain.chkLoadOnBoot.Enabled = TRUE
+   FMain.cmbAutoRefresh.Enabled = TRUE
+ENDIF
+
+FMain.Show
+
+END

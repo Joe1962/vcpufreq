@@ -1,0 +1,14 @@
+# Gambas Project File 1.0
+Project=vcpufreq-loader
+Title=vcpufreq-load
+Icon=kcmprocessor.png
+Startup=Main
+TabSize=3
+Version=1.0.4
+SnapToGrid=1
+ShowGrid=1
+Snap=4
+Localize=0
+KeepDebugInfo=1
+ControlPublic=1
+Prefix=0

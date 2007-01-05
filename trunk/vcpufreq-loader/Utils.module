@@ -1,0 +1,127 @@
+' Gambas module file
+
+
+PUBLIC SUB logMessage(sMesg AS String)
+DIM sTemp AS String
+
+sTemp = "logger " &  "-t " & Application.Title & " -p local5.info " & sMesg
+SHELL sTemp WAIT
+
+' In case I decide to make this a function:
+' RETURN TRUE
+' 
+' CATCH
+'    RETURN FALSE
+
+END
+
+
+
+PUBLIC FUNCTION AutoUnitsFreq(clockfreq AS Integer) AS String
+DIM Temp AS Integer
+
+' Return drive/partition size in nicer units as "value;unit" string:
+IF clockfreq < 1000000 THEN ' MegaHertz:
+   RETURN Format$(clockfreq / 1000, "###,###,###") & " MegaHertz"
+ELSE ' GigaHertz:
+   RETURN Format$(clockfreq / 1000000, "####,###,###.000") & " GigaHertz"
+END IF
+
+END
+
+PUBLIC FUNCTION FileEchoLine(filename AS String, sLine AS String) AS Boolean
+DIM sTemp AS String
+
+sTemp = "echo " & sLine & " > " & filename
+SHELL sTemp WAIT
+
+RETURN TRUE
+
+CATCH
+   RETURN FALSE
+
+END
+
+PUBLIC FUNCTION FileReadLine(filename AS String) AS String
+DIM hFile AS File
+DIM sLine AS String
+
+OPEN filename FOR READ AS # hFile
+LINE INPUT #hFile, sLine
+CLOSE #hFile
+RETURN sLine
+
+CATCH
+   RETURN ""
+
+END
+
+
+PUBLIC FUNCTION ReadIni(IniKey AS String, vDEFAULT AS Variant) AS Variant
+' Read from ini file primitive:
+DIM hSettings AS Settings
+DIM aVariant AS Variant
+   hSettings = NEW Settings(Global.INIFIle)
+   aVariant = hSettings [ IniKey , vDEFAULT ]
+'   aVariant = hSettings [ IniKey ]
+   RETURN aVariant
+END
+
+
+PUBLIC SUB ReadConfig()
+' Read config from ini file:
+
+Global.vScalingGov =  ReadIni("Setting.ScalingGov", "userspace")
+Global.vCPUFreq =  ReadIni("Setting.CPUFreq", "")
+Global.vCPUFreqMaxLimit =  ReadIni("Setting.CPUFreqMaxLimit", "")
+Global.vCPUFreqMinLimit =  ReadIni("Setting.CPUFreqMinLimit", "")
+Global.vAutoRefreshRate =  ReadIni("Setting.AutoRefreshRate", "manual")
+Global.vSaveOnExit = ReadIni("Setting.SaveOnExit", 0)
+Global.vLoadOnStart = ReadIni("Setting.LoadOnStart", 0)
+Global.vCPUFreqLoad = ReadIni("Setting.CPUFreqLoad", 0)
+
+END
+
+
+PUBLIC SUB SetConfig()
+' Set config to hardware:
+DIM CPUFreqPath AS String
+DIM retBool AS Boolean
+DIM strTemp AS String
+
+CPUFreqPath = Global.BasePath &/ "cpu0" &/ "cpufreq"
+PRINT "CPUFreqPath: " & CPUFreqPath
+logMessage("CPUFreqPath: " & CPUFreqPath)
+
+' Set scaling governor:
+retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_governor", Global.vScalingGov)
+' Get scaling_governor:
+strTemp = Utils.FileReadLine(CPUFreqPath &/ "scaling_governor")
+' Check for scaling_governor change:
+IF strTemp <> Global.vScalingGov THEN
+   PRINT "Unable to set desired scaling governor..." & gb.NewLine & "try modprobing corresponding governor module:" & gb.NewLine & gb.NewLine & "# modprobe cpufreq_" & Global.vScalingGov
+   logMessage("Unable to set desired scaling governor..." & gb.NewLine & "try modprobing corresponding governor module:" & gb.NewLine & gb.NewLine & "# modprobe cpufreq_" & Global.vScalingGov)
+ENDIF
+PRINT "Set scaling governor: " & Global.vScalingGov
+logMessage("Set scaling governor: " & Global.vScalingGov)
+
+IF Global.vScalingGov = "userspace" THEN
+' Set scaling speed:
+   retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_setspeed", Global.vCPUFreq)
+   PRINT "Set scaling speed: " & Global.vCPUFreq & " (" & AutoUnitsFreq(Global.vCPUFreq) & ")"
+   logMessage("Set scaling speed: " & Global.vCPUFreq)
+ENDIF
+
+' Set scaling max freq.:
+retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_max_freq", Global.vCPUFreqMaxLimit)
+PRINT "Set scaling max freq.: " & Global.vCPUFreqMaxLimit & " (" & AutoUnitsFreq(Global.vCPUFreqMaxLimit) & ")"
+logMessage("Set scaling max freq.: " & Global.vCPUFreqMaxLimit)
+
+' Set scaling min freq.:
+retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_min_freq", Global.vCPUFreqMinLimit)
+PRINT "Set scaling min freq.: " & Global.vCPUFreqMinLimit & " (" & AutoUnitsFreq(Global.vCPUFreqMinLimit) & ")"
+logMessage("Set scaling min freq.: " & Global.vCPUFreqMinLimit)
+
+END
+
+
