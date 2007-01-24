@@ -14,9 +14,9 @@ RETURN Global.numCPUs
 END
 
 PUBLIC FUNCTION AutoUnitsFreq(clockfreq AS Integer) AS String
+' Return drive/partition size in pretty format as "value;unit" string:
 DIM Temp AS Integer
 
-' Return drive/partition size in nicer units as "value;unit" string:
 IF clockfreq < 1000000 THEN ' MegaHertz:
    RETURN Format$(clockfreq / 1000, "###,###,###") & " MegaHertz"
 ELSE ' GigaHertz:
@@ -26,6 +26,7 @@ END IF
 END
 
 PUBLIC FUNCTION AutoUnitsFreqRev(clockfreqPretty AS String) AS Integer
+'Convert pretty format back to drive/partition size
 
 IF Instr(clockfreqPretty, "GigaHertz") > 0 THEN
    RETURN Val(clockfreqPretty) * 1000000
@@ -63,17 +64,19 @@ PUBLIC FUNCTION ReadIni(IniKey AS String, vDEFAULT AS Variant) AS Variant
 ' Read from ini file primitive:
 DIM hSettings AS Settings
 DIM aVariant AS Variant
-   hSettings = NEW Settings(Global.INIFIle)
-   aVariant = hSettings [ IniKey , vDEFAULT ]
-'   aVariant = hSettings [ IniKey ]
-   RETURN aVariant
+
+hSettings = NEW Settings(Global.INIFIle)
+aVariant = hSettings [ IniKey , vDEFAULT ]
+'aVariant = hSettings [ IniKey ]
+RETURN aVariant
 END
 
 PUBLIC SUB WriteIni(IniKey AS String, aVariant AS Variant)
 ' Write to ini file primitive:
 DIM hSettings AS Settings
-   hSettings = NEW Settings(Global.INIFIle)
-   hSettings [ IniKey ] = aVariant
+
+hSettings = NEW Settings(Global.INIFIle)
+hSettings [ IniKey ] = aVariant
 END
 
 PUBLIC SUB WriteConfig()
@@ -103,16 +106,17 @@ Global.vCPUFreqLoad = ReadIni("Setting.CPUFreqLoad", 0)
 END
 
 
-PUBLIC SUB SetConfig()
+PUBLIC SUB SetConfig(whichCPU AS String)
 ' Set config to hardware:
 DIM CPUFreqPath AS String
 DIM retBool AS Boolean
 DIM strTemp AS String
 
-Global.CPUFreqPath = Global.BasePath &/ "cpu0" &/ "cpufreq"
+CPUFreqPath = Global.BasePath &/ whichCPU &/ "cpufreq"
 
 ' Set scaling governor:
-retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_governor", Global.vScalingGov)
+IF Global.nonroot = FALSE THEN retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_governor", Global.vScalingGov)
+
 ' Get scaling_governor:
 strTemp = Utils.FileReadLine(CPUFreqPath &/ "scaling_governor")
 ' Check for scaling_governor change:
@@ -122,60 +126,61 @@ ENDIF
 
 IF Global.vScalingGov = "userspace" THEN
 ' Set scaling speed:
-   retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_setspeed", AutoUnitsFreqRev(Global.vCPUFreq))
+   IF Global.nonroot = FALSE THEN retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_setspeed", Global.vCPUFreq)
 ENDIF
 
 ' Set scaling max freq.:
-retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_max_freq", AutoUnitsFreqRev(Global.vCPUFreqMaxLimit))
+IF Global.nonroot = FALSE THEN retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_max_freq", Global.vCPUFreqMaxLimit)
 
 ' Set scaling min freq.:
-retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_min_freq", AutoUnitsFreqRev(Global.vCPUFreqMinLimit))
+IF Global.nonroot = FALSE THEN retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_min_freq", Global.vCPUFreqMinLimit)
 END
 
 PUBLIC SUB GetConfig(whichCPU AS String)
 ' Get config from hardware:
 DIM n AS Integer
 DIM strtemp AS String
+DIM CPUFreqPath AS String
 
 ' Check if cpufreq enabled for this CPU:
-Global.CPUFreqPath = Global.BasePath &/ whichCPU &/ "cpufreq"
-IF IsDir(Global.CPUFreqPath) THEN
+CPUFreqPath = Global.BasePath &/ whichCPU &/ "cpufreq"
+IF IsDir(CPUFreqPath) THEN
    ' Get scaling_driver:
-   TRY Global.vScalingDriver = Utils.FileReadLine(Global.CPUFreqPath &/ "scaling_driver")
-   IF ERROR THEN ERROR_exit(0, TRUE, "", Global.CPUFreqPath &/ "scaling_driver")
+   TRY Global.vScalingDriver = Utils.FileReadLine(CPUFreqPath &/ "scaling_driver")
+   IF ERROR THEN ERROR_exit(0, TRUE, "", CPUFreqPath &/ "scaling_driver")
    ' Get scaling_governor:
-   TRY Global.vScalingGov = Utils.FileReadLine(Global.CPUFreqPath &/ "scaling_governor")
-   IF ERROR THEN ERROR_exit(0, TRUE, "", Global.CPUFreqPath &/ "scaling_governor")
+   TRY Global.vScalingGov = Utils.FileReadLine(CPUFreqPath &/ "scaling_governor")
+   IF ERROR THEN ERROR_exit(0, TRUE, "", CPUFreqPath &/ "scaling_governor")
    ' Get scaling_cur_freq:
-   TRY Global.vCPUFreq = Utils.FileReadLine(Global.CPUFreqPath &/ "scaling_cur_freq")
-   IF ERROR THEN ERROR_exit(0, TRUE, "", Global.CPUFreqPath &/ "scaling_cur_freq")
+   TRY Global.vCPUFreq = Utils.FileReadLine(CPUFreqPath &/ "scaling_cur_freq")
+   IF ERROR THEN ERROR_exit(0, TRUE, "", CPUFreqPath &/ "scaling_cur_freq")
    ' Get cpuinfo_max_freq:
-   TRY Global.vCPUFreqMax = Utils.FileReadLine(Global.CPUFreqPath &/ "cpuinfo_max_freq")
-   IF ERROR THEN ERROR_exit(0, TRUE, "", Global.CPUFreqPath &/ "cpuinfo_max_freq")
+   TRY Global.vCPUFreqMax = Utils.FileReadLine(CPUFreqPath &/ "cpuinfo_max_freq")
+   IF ERROR THEN ERROR_exit(0, TRUE, "", CPUFreqPath &/ "cpuinfo_max_freq")
    ' Get cpuinfo_min_freq:
-   TRY Global.vCPUFreqMin = Utils.FileReadLine(Global.CPUFreqPath &/ "cpuinfo_min_freq")
-   IF ERROR THEN ERROR_exit(0, TRUE, "", Global.CPUFreqPath &/ "cpuinfo_min_freq")
+   TRY Global.vCPUFreqMin = Utils.FileReadLine(CPUFreqPath &/ "cpuinfo_min_freq")
+   IF ERROR THEN ERROR_exit(0, TRUE, "", CPUFreqPath &/ "cpuinfo_min_freq")
    ' Get scaling_max_freq:
-   TRY Global.vCPUFreqMaxLimit = Utils.FileReadLine(Global.CPUFreqPath &/ "scaling_max_freq")
-   IF ERROR THEN ERROR_exit(0, TRUE, "", Global.CPUFreqPath &/ "scaling_max_freq")
+   TRY Global.vCPUFreqMaxLimit = Utils.FileReadLine(CPUFreqPath &/ "scaling_max_freq")
+   IF ERROR THEN ERROR_exit(0, TRUE, "", CPUFreqPath &/ "scaling_max_freq")
    ' Get scaling_min_freq:
-   TRY Global.vCPUFreqMinLimit = Utils.FileReadLine(Global.CPUFreqPath &/ "scaling_min_freq")
-   IF ERROR THEN ERROR_exit(0, TRUE, "", Global.CPUFreqPath &/ "scaling_min_freq")
+   TRY Global.vCPUFreqMinLimit = Utils.FileReadLine(CPUFreqPath &/ "scaling_min_freq")
+   IF ERROR THEN ERROR_exit(0, TRUE, "", CPUFreqPath &/ "scaling_min_freq")
    ' Get scaling_available_frequencies
    Global.AvailableFreqs.Clear
-   TRY Global.AvailableFreqs = Split(Utils.FileReadLine(Global.CPUFreqPath &/ "scaling_available_frequencies"), " ", "")
-   IF ERROR THEN ERROR_exit(0, TRUE, "", Global.CPUFreqPath &/ "scaling_available_frequencies")
+   TRY Global.AvailableFreqs = Split(Utils.FileReadLine(CPUFreqPath &/ "scaling_available_frequencies"), " ", "")
+   IF ERROR THEN ERROR_exit(0, TRUE, "", CPUFreqPath &/ "scaling_available_frequencies")
 
    ' START: Need to clean up empty positions due to gambas1 split()...
    FOR n = 0 TO Global.AvailableFreqs.Max
       IF Global.AvailableFreqs[n] = "" THEN
          Global.AvailableFreqs.Remove(n)
       ELSE
-         IF IsInteger(val(Global.AvailableFreqs[n])) THEN
+         IF IsInteger(Val(Global.AvailableFreqs[n])) THEN
          ELSE
             strtemp = "Unexpected contents found in:"
             strtemp = strtemp & gb.NewLine
-            strtemp = strtemp & Global.CPUFreqPath &/ "scaling_available_frequencies"
+            strtemp = strtemp & CPUFreqPath &/ "scaling_available_frequencies"
             strtemp = strtemp & gb.NewLine
             strtemp = strtemp & "If possible post the contents of this file when reporting the error."
             ERROR_exit(255, TRUE, strtemp)

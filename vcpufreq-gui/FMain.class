@@ -26,7 +26,7 @@ FMain.txtNumCPUs.Text = Utils.CPUCount()
 ' Need to read config to vars first, then check for "Load on start":
 Utils.ReadConfig     ' Load global vars from ini.
 IF Global.vLoadOnStart = TRUE THEN
-   Utils.SetConfig
+   Utils.SetConfig("cpu0")
 ELSE
    Global.vSaveOnExit = FALSE
    Global.vLoadOnStart = FALSE
@@ -142,7 +142,7 @@ DIM retBool AS Boolean
 
 IF cmbScalingGovernor.Text <> "" AND cmbScalingGovernor.Text <> txtScalingGovernor.Text THEN
    CPUFreqPath = Global.BasePath &/ "cpu0" &/ "cpufreq"
-   retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_governor", cmbScalingGovernor.Text)
+   IF Global.nonroot = FALSE THEN retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_governor", cmbScalingGovernor.Text)
    ' Get scaling_governor:
    txtScalingGovernor.Text = Utils.FileReadLine(CPUFreqPath &/ "scaling_governor")
    ' Check for scaling_governor change:
@@ -171,7 +171,7 @@ DIM setSpeed AS Integer
 IF cmbScalingSetSpeed.Text <> txtScalingSetSpeed.Text THEN
    CPUFreqPath = Global.BasePath &/ "cpu0" &/ "cpufreq"
    setSpeed = Global.AvailableFreqs[cmbScalingSetSpeed.Index]
-   retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_setspeed", setSpeed)
+   IF Global.nonroot = FALSE THEN retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_setspeed", setSpeed)
    ' refresh scaling_cur_freq:
    txtScalingSetSpeed.Text = Utils.AutoUnitsFreq(Utils.FileReadLine(CPUFreqPath &/ "scaling_cur_freq"))
    Global.vCPUFreq = Utils.AutoUnitsFreqRev(txtScalingSetSpeed.Text)
@@ -186,7 +186,7 @@ DIM setSpeed AS Integer
 IF cmbScalingMaxFreq.Text <> txtScalingMaxFreq.Text THEN
    CPUFreqPath = Global.BasePath &/ "cpu0" &/ "cpufreq"
    setSpeed = Global.AvailableFreqs[cmbScalingMaxFreq.Index]
-   retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_max_freq", setSpeed)
+   IF Global.nonroot = FALSE THEN retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_max_freq", setSpeed)
    ' Refresh scaling_max_freq:
    txtScalingMaxFreq.Text = Utils.AutoUnitsFreq(Utils.FileReadLine(CPUFreqPath &/ "scaling_max_freq"))
    Global.vCPUFreqMaxLimit = Utils.AutoUnitsFreqRev(txtScalingMaxFreq.Text)
@@ -204,7 +204,7 @@ DIM setSpeed AS Integer
 IF cmbScalingMinFreq.Text <> txtScalingMinFreq.Text THEN
    CPUFreqPath = Global.BasePath &/ "cpu0" &/ "cpufreq"
    setSpeed = Global.AvailableFreqs[cmbScalingMinFreq.Index]
-   retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_min_freq", setSpeed)
+   IF Global.nonroot = FALSE THEN retBool = Utils.FileEchoLine(CPUFreqPath &/ "scaling_min_freq", setSpeed)
    ' Refresh scaling_min_freq:
    txtScalingMinFreq.Text = Utils.AutoUnitsFreq(Utils.FileReadLine(CPUFreqPath &/ "scaling_min_freq"))
    Global.vCPUFreqMinLimit = Utils.AutoUnitsFreqRev(txtScalingMinFreq.Text)
@@ -259,8 +259,6 @@ END
 
 PUBLIC SUB Timer1_Timer()
 
-FMain.txtNumCPUs.Text = Utils.CPUCount()
-Utils.GetConfig("cpu0")
-RefreshWindow
+butRefresh_Click
 
 END
