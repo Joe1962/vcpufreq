@@ -1,0 +1,22 @@
+' Gambas module file
+
+SUB Main()
+
+IF System.User <> "root" THEN
+   PRINT "You need to be root to run " & Application.Title & "..."
+   Utils.logMessage("You need to be root to run " & Application.Title & "...")
+ELSE
+   ' Check for vcpufreq-load enabled:
+      Utils.ReadConfig
+      IF Global.vCPUFreqLoad = TRUE THEN
+         ' Load saved cpu-freq config:
+         PRINT "vcpufreq-load enabled in config..."
+         Utils.logMessage("vcpufreq-load enabled in config...")
+         Utils.SetConfig
+      ELSE
+         PRINT "vcpufreq-load disabled in config..."
+         Utils.logMessage("vcpufreq-load disabled in config...")
+      ENDIF
+ENDIF
+
+END
