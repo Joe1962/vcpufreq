@@ -1,6 +1,6 @@
 ' Gambas class file
 
-'PUBLIC CONST INIFIle AS String = ".cpu-freq.conf"
+'PUBLIC CONST INIFIle AS String = ".vcpufreq.conf"
 PUBLIC CONST INIFIle AS String = "/etc/vcpufreq.conf"
 PUBLIC CONST BasePath AS String = "/sys/devices/system/cpu/"
 STATIC PUBLIC CPUFreqPath AS String

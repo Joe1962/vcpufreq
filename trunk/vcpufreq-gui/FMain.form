@@ -1,7 +1,7 @@
 # Gambas Form File 1.0
 
 { FMain Form
-  Move(240,618,403,257)
+  Move(240,193,403,257)
   Font = Font["Luxi Sans,10"]
   Text = ("cpu-freq")
   Icon = Picture["kcmprocessor.png"]
@@ -27,7 +27,7 @@
     }
     { Label7 Label
       Move(8,152,112,21)
-      Text = ("Min cpufreq limit:")
+      Text = ("Min. cpufreq limit:")
       Alignment = Align.Right
     }
     { txtScalingSetSpeed TextBox
@@ -161,7 +161,7 @@
   }
   { Label5 Label
     Move(8,104,112,21)
-    Text = ("Min CPU freq.:")
+    Text = ("Min. CPU freq.:")
     Alignment = Align.Right
   }
   { Panel3 Panel
