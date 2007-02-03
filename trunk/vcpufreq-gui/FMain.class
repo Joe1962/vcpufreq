@@ -73,6 +73,18 @@ IF Global.vScalingDriver <> "UNAVAILABLE" THEN
       cmbScalingMinFreq.Add(strTemp)
       IF Utils.AutoUnitsFreqRev(strTemp) = Global.vCPUFreqMinLimit THEN cmbScalingMinFreq.Tag = cmbScalingMinFreq.Count - 1
    NEXT
+
+'Fix for empty tag situations:
+IF cmbScalingSetSpeed.Tag = "" THEN
+   cmbScalingSetSpeed.Tag = 0
+ENDIF
+IF cmbScalingMaxFreq.Tag = "" THEN
+   cmbScalingMaxFreq.Tag = 0
+ENDIF
+IF cmbScalingMinFreq.Tag = "" THEN
+   cmbScalingMinFreq.Tag = cmbScalingMinFreq.Count - 1
+ENDIF
+
    ' Sync Scaling Freqs. combos:
    cmbScalingSetSpeed.Index = cmbScalingSetSpeed.Tag
    IF Global.nonroot = FALSE THEN cmbScalingSetSpeed.Enabled = TRUE
