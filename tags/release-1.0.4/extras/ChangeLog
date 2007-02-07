@@ -1,0 +1,47 @@
+2007-02-06   <joe1962@users.sourceforge.net>
+
+	* Released 1.0.4
+
+2007-02-02   <joe1962@users.sourceforge.net>
+
+	* Added hacks for non-matching current, max. or min. freqs (empty tag situations) on some systems.
+
+2007-01-23   <joe1962@users.sourceforge.net>
+
+	* Released 1.0.3
+
+2007-01-23   <joe1962@users.sourceforge.net>
+
+	* Fixed issue #1: Error popup: Unable to set desired scaling governor... when module already loaded.
+	* Fixed issue #2: App crash with Gambas error: wanted Integer (or string), got Null instead
+
+2006-11-20   <joe1962@users.sourceforge.net>
+
+	* Released 1.0.2
+
+2006-11-20    <joe1962@users.sourceforge.net>
+
+	* Added error handling for weird content in scaling_available_frequencies
+
+2006-11-19    <joe1962@users.sourceforge.net>
+
+	* Added error handling for missing cpufreq files
+	* Implemented read-only mode if not root
+
+2006-10-31    <joe1962@users.sourceforge.net>
+
+	* Released 1.0.1
+
+2006-10-31    <joe1962@users.sourceforge.net>
+
+	* Now outputs info messages to syslog (tail /var/log/messages)
+	* Fixed manual "Refresh" button
+
+2006-10-28    <joe1962@users.sourceforge.net>
+
+	* Released 1.0.0
+
+2006-10-28    <joe1962@users.sourceforge.net>
+
+	* Added vcpufreq-load cli utility for setting saved config on boot
+	* Renamed project to vcpufreq

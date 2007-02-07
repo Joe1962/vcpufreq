@@ -1,0 +1,4 @@
+TODO - Add error checking after setting scaling_setspeed in Utils.SetConfig
+TODO - Add error checking after setting scaling_max_freq in Utils.SetConfig
+TODO - Add error checking after setting scaling_min_freq in Utils.SetConfig
+

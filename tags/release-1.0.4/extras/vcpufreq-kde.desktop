@@ -1,0 +1,14 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=
+DocPath=
+Exec=gbx -x vcpufreq
+Icon=vcpufreq
+MimeType=
+Name=vcpufreq
+GenericName=cpufreq utility
+X-KDE-Username=root
+X-KDE-SubstituteUID=true
+OnlyShowIn=KDE;
+Terminal=false
+Type=Application

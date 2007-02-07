@@ -1,0 +1,15 @@
+# Gambas Project File 1.0
+Project=vcpufreq-gui
+Title=vcpufreq
+Icon=vcpufreq.png
+Startup=Main
+TabSize=3
+Version=1.0.5
+Library=gb.qt
+SnapToGrid=1
+ShowGrid=1
+Snap=4
+Localize=0
+KeepDebugInfo=0
+ControlPublic=1
+Prefix=0

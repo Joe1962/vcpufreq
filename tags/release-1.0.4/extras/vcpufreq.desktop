@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=
+DocPath=
+Exec=gksu -g vcpufreq
+Icon=vcpufreq
+MimeType=
+Name=vcpufreq
+GenericName=cpufreq utility
+Terminal=false
+Type=Application
+Categories=Qt;System;
+NotShowIn=KDE;

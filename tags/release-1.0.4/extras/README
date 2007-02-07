@@ -1,0 +1,10 @@
+vcpufreq (cpufreq configuration utility)
+
+vcpufreq is a cpufreq configuration utility developed in Gambas by
+Joe1962 for Vector Linux. It makes it easy to change cpufreq governor
+and related frequency settings. It does not (yet) load the apropiate
+cpufreq module for your system. Now with CLI vcpufreq-load to set
+saved config on system start.
+
+Joe1962 <joe1962@users.sourceforge.net>
+GNU LIBRARY GENERAL PUBLIC LICENSE, Version 2, June 1991
